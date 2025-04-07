@@ -1,0 +1,769 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GroceryBot - AI Shopping Assistant</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #2b8a3e;
+            --primary-dark: #1a5e2b;
+            --primary-light: #d3f9d8;
+            --accent: #ff922b;
+            --text: #343a40;
+            --text-light: #868e96;
+            --white: #ffffff;
+            --glass: rgba(255, 255, 255, 0.25);
+            --glass-border: rgba(255, 255, 255, 0.18);
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            color: var(--text);
+            line-height: 1.6;
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            min-height: 100vh;
+            overflow-x: hidden;
+            position: relative;
+        }
+        
+        body::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('/Images/grocery-store-background4.jpg') center/cover no-repeat;
+            opacity: 0.15;
+            z-index: -1;
+        }
+        
+        .blob {
+            position: absolute;
+            width: 500px;
+            height: 500px;
+            border-radius: 50%;
+            filter: blur(60px);
+            z-index: -1;
+        }
+        
+        .blob-1 {
+            background: var(--primary-light);
+            top: -100px;
+            right: -100px;
+            opacity: 0.6;
+        }
+        
+        .blob-2 {
+            background: var(--accent);
+            bottom: -150px;
+            left: -150px;
+            opacity: 0.4;
+            width: 700px;
+            height: 700px;
+        }
+        
+        header {
+            padding: 2rem 0;
+            position: relative;
+            z-index: 10;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+        
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 2rem;
+            background: var(--glass);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border-radius: 16px;
+            border: 1px solid var(--glass-border);
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.1);
+            margin-bottom: 2rem;
+        }
+        
+        .logo {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .logo i {
+            font-size: 1.5rem;
+        }
+        
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+        }
+        
+        .nav-link {
+            color: var(--text);
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+        
+        .nav-link:hover {
+            color: var(--primary);
+        }
+        
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: var(--primary);
+            transition: width 0.3s ease;
+        }
+        
+        .nav-link:hover::after {
+            width: 100%;
+        }
+        
+        .btn {
+            display: inline-block;
+            padding: 0.8rem 1.8rem;
+            border-radius: 50px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            border: none;
+            cursor: pointer;
+        }
+        
+        .btn-primary {
+            background: var(--primary);
+            color: var(--white);
+            box-shadow: 0 4px 15px rgba(43, 138, 62, 0.3);
+        }
+        
+        .btn-primary:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(43, 138, 62, 0.4);
+        }
+        
+        .btn-outline {
+            background: transparent;
+            color: var(--primary);
+            border: 2px solid var(--primary);
+        }
+        
+        .btn-outline:hover {
+            background: var(--primary);
+            color: var(--white);
+        }
+        
+        .hero {
+            text-align: center;
+            padding: 4rem 0;
+            position: relative;
+        }
+        
+        .hero h1 {
+            font-size: 3.5rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            background: linear-gradient(to right, var(--primary), var(--accent));
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            line-height: 1.2;
+        }
+        
+        .hero p {
+            font-size: 1.2rem;
+            max-width: 700px;
+            margin: 0 auto 2.5rem;
+            color: var(--text-light);
+        }
+        
+        .hero-btns {
+            display: flex;
+            justify-content: center;
+            gap: 1.5rem;
+            margin-bottom: 3rem;
+        }
+        
+        .glass-card {
+            background: var(--glass);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border-radius: 20px;
+            border: 1px solid var(--glass-border);
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.1);
+            padding: 2rem;
+            transition: all 0.3s ease;
+        }
+        
+        .glass-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 12px 40px rgba(31, 38, 135, 0.2);
+        }
+        
+        .features {
+            padding: 5rem 0;
+        }
+        
+        .section-title {
+            text-align: center;
+            font-size: 2.5rem;
+            margin-bottom: 3rem;
+            color: var(--primary);
+        }
+        
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+        
+        .feature-card {
+            text-align: center;
+            padding: 2.5rem 2rem;
+        }
+        
+        .feature-icon {
+            width: 80px;
+            height: 80px;
+            background: var(--white);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1.5rem;
+            font-size: 2rem;
+            color: var(--primary);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+        
+        .feature-title {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            color: var(--primary-dark);
+        }
+        
+        .feature-desc {
+            color: var(--text-light);
+        }
+        
+        .demo-section {
+            padding: 5rem 0;
+            position: relative;
+        }
+        
+        .demo-container {
+            display: flex;
+            align-items: center;
+            gap: 3rem;
+        }
+        
+        .demo-text {
+            flex: 1;
+        }
+        
+        .demo-text h2 {
+            font-size: 2.5rem;
+            margin-bottom: 1.5rem;
+            color: var(--primary);
+        }
+        
+        .demo-text p {
+            margin-bottom: 2rem;
+            color: var(--text-light);
+        }
+        
+        .chat-demo {
+            flex: 1;
+            background: var(--white);
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            transform-style: preserve-3d;
+            perspective: 1000px;
+        }
+        
+        .chat-header {
+            background: var(--primary);
+            color: var(--white);
+            padding: 1.2rem;
+            text-align: center;
+            font-weight: 600;
+        }
+        
+        .chat-messages {
+            padding: 1.5rem;
+            height: 400px;
+            overflow-y: auto;
+            background: url('/Images/grocery-store-background2.jpg') center/cover;
+            background-blend-mode: overlay;
+            background-color: rgba(255, 255, 255, 0.9);
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+        
+        .message {
+            padding: 1rem 1.2rem;
+            border-radius: 18px;
+            max-width: 80%;
+            font-size: 0.95rem;
+            line-height: 1.5;
+            animation: fadeIn 0.3s ease;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .bot-message {
+            background: var(--primary-light);
+            align-self: flex-start;
+            border-bottom-left-radius: 5px;
+            color: var(--primary-dark);
+        }
+        
+        .user-message {
+            background: var(--white);
+            align-self: flex-end;
+            border-bottom-right-radius: 5px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        }
+        
+        .how-it-works {
+            padding: 5rem 0;
+            text-align: center;
+        }
+        
+        .steps {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            margin-top: 3rem;
+            flex-wrap: wrap;
+        }
+        
+        .step {
+            flex: 1;
+            min-width: 250px;
+            max-width: 300px;
+            position: relative;
+        }
+        
+        .step-number {
+            width: 60px;
+            height: 60px;
+            background: var(--primary);
+            color: var(--white);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin: 0 auto 1.5rem;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .step::after {
+            content: '';
+            position: absolute;
+            top: 30px;
+            left: 50%;
+            width: calc(100% + 2rem);
+            height: 2px;
+            background: var(--primary-light);
+            z-index: 0;
+        }
+        
+        .step:last-child::after {
+            display: none;
+        }
+        
+        .step-title {
+            font-size: 1.3rem;
+            margin-bottom: 1rem;
+            color: var(--primary-dark);
+        }
+        
+        .cta {
+            padding: 6rem 0;
+            text-align: center;
+            position: relative;
+        }
+        
+        .cta h2 {
+            font-size: 2.5rem;
+            margin-bottom: 1.5rem;
+            color: var(--primary);
+        }
+        
+        .cta p {
+            max-width: 600px;
+            margin: 0 auto 2.5rem;
+            color: var(--text-light);
+        }
+        
+        footer {
+            background: var(--primary-dark);
+            color: var(--white);
+            padding: 4rem 0 2rem;
+            position: relative;
+        }
+        
+        .footer-content {
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 3rem;
+            margin-bottom: 3rem;
+        }
+        
+        .footer-col {
+            flex: 1;
+            min-width: 200px;
+        }
+        
+        .footer-logo {
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .footer-desc {
+            margin-bottom: 1.5rem;
+            opacity: 0.8;
+        }
+        
+        .social-links {
+            display: flex;
+            gap: 1rem;
+        }
+        
+        .social-link {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--white);
+            transition: all 0.3s ease;
+        }
+        
+        .social-link:hover {
+            background: var(--primary-light);
+            color: var(--primary-dark);
+            transform: translateY(-3px);
+        }
+        
+        .footer-title {
+            font-size: 1.2rem;
+            margin-bottom: 1.5rem;
+            font-weight: 600;
+        }
+        
+        .footer-links {
+            list-style: none;
+        }
+        
+        .footer-link-item {
+            margin-bottom: 0.8rem;
+        }
+        
+        .footer-link {
+            color: var(--white);
+            text-decoration: none;
+            opacity: 0.8;
+            transition: all 0.3s ease;
+        }
+        
+        .footer-link:hover {
+            opacity: 1;
+            padding-left: 5px;
+        }
+        
+        .footer-bottom {
+            text-align: center;
+            padding-top: 2rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            opacity: 0.8;
+        }
+        
+        @media (max-width: 768px) {
+            .navbar {
+                flex-direction: column;
+                gap: 1rem;
+                padding: 1.5rem;
+            }
+            
+            .nav-links {
+                flex-direction: column;
+                gap: 1rem;
+                text-align: center;
+            }
+            
+            .hero h1 {
+                font-size: 2.5rem;
+            }
+            
+            .hero-btns {
+                flex-direction: column;
+                gap: 1rem;
+            }
+            
+            .demo-container {
+                flex-direction: column;
+            }
+            
+            .step::after {
+                display: none;
+            }
+            
+            .footer-content {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="blob blob-1"></div>
+    <div class="blob blob-2"></div>
+    
+    <header>
+        <div class="container">
+            <nav class="navbar glass-card">
+                <div class="logo">
+                    <i class="fa-solid fa-cart-shopping"></i>
+                    GroceryBot
+                </div>
+                <div class="nav-links">
+                    <a href="#hero" class="nav-link">Home</a>
+                    <a href="#features" class="nav-link">Features</a>
+                    <a href="#how-it-works" class="nav-link">How It Works</a>
+                    <a href="#footer" class="nav-link">Contact</a>
+                </div>
+                <a href="index.html" class="btn btn-primary">Try Now</a>
+            </nav>
+            
+            <div class="hero" id="hero">
+                <h1>Your AI-Powered Grocery Shopping Assistant</h1>
+                <p>GroceryBot revolutionizes your shopping experience with intelligent meal planning, real-time price comparisons, and personalized recommendations tailored just for you.</p>
+                <div class="hero-btns">
+                    <a href="index.html" class="btn btn-primary">
+                        <i class="fas fa-comment-alt"></i> Chat Now
+                    </a>
+                </div>
+                <div class="glass-card" style="max-width: 800px; margin: 0 auto;">
+                    <p>"Told it I’m making tacos… got all the ingredients in seconds. No stress, just shop!"</p>
+                </div>
+            </div>
+        </div>
+    </header>
+    
+    <section class="features" id="features">
+        <div class="container">
+            <h2 class="section-title">Smart Shopping Features</h2>
+            <div class="features-grid">
+                <div class="glass-card feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-list-alt"></i>
+                    </div>
+                    <h3 class="feature-title">Smart List Creation</h3>
+                    <p class="feature-desc">Automatically create grocery lists with just a few inputs.</p>
+                </div>
+                
+                <div class="glass-card feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-percentage"></i>
+                    </div>
+                    <h3 class="feature-title">Edit Anytime</h3>
+                    <p class="feature-desc">Add, update, or remove items from your list effortlessly.
+
+                    </p>
+                </div>
+                
+                <div class="glass-card feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-utensils"></i>
+                    </div>
+                    <h3 class="feature-title">Dish-to-Ingredients Conversion</h3>
+                    <p class="feature-desc">Mention any dish, and the chatbot will generate a full ingredients list for it.</p>
+                </div>
+                
+                <div class="glass-card feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-heartbeat"></i>
+                    </div>
+                    <h3 class="feature-title">Organized Shopping</h3>
+                    <p class="feature-desc">Items are grouped and sorted smartly to make shopping quicker and easier.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <section class="demo-section">
+        <div class="container">
+            <div class="demo-container">
+                <div class="demo-text">
+                    <h2>Experience the Future of Grocery Shopping</h2>
+                    <p>Our conversational AI understands your needs just like a personal shopper would. Whether you're meal planning for the week or just need to pick up a few items, GroceryBot makes it effortless.</p>
+                    <p>See how natural and intuitive the conversation flows in our interactive demo.</p>
+                    <a href="index.html" class="btn btn-primary">Start Your Free Trial</a>
+                </div>
+                
+                <div class="chat-demo glass-card">
+                    <div class="chat-header">
+                        <i class="fas fa-comment-dots"></i> GroceryBot Chat
+                    </div>
+                    <div class="chat-messages">
+                        <div class="message bot-message">Hello! I'm GroceryBot, your smart shopping assistant. How can I help you today?</div>
+                        
+                        <div class="message user-message">I need to make pasta as dinner for my family of 5 members.</div>
+                        
+                        <div class="message bot-message">Great! Found recipe: Farfalle with Peas, Ham and Cream
+                            Ingredients required for 5 servings:
+                            - 1.25 teaspoon of butter
+                            - 3.75 slices of ham
+                            - 5.00 servings of farfalle pasta
+                            - 0.62 cup of heavy cream
+                            - 0.62 cup of parmesan cheese
+                            - 1.25 cup of peas
+                            - 5.00 servings of salt and pepper
+                            
+                            Added to grocery list:
+                            </div>
+                        
+                        <div class="message user-message">That sounds perfect! What do I need to buy?</div>
+                        
+                        <div class="message bot-message">Just 7 items: 
+                            - 2 teaspoon of butter
+                            - 4 slices of ham
+                            - 5.00 servings of farfalle pasta
+                            - 2-3 cup of heavy cream
+                            - 1 cup of parmesan cheese
+                            - 1.25 cup of peas
+                            - salt and pepper</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <section class="how-it-works" id="how-it-works">
+        <div class="container">
+            <h2 class="section-title">How GroceryBot Works</h2>
+            <p style="max-width: 700px; margin: 0 auto 3rem; color: var(--text-light);">Getting started with your personal shopping assistant is simple and takes just minutes.</p>
+            
+            <div class="steps">
+                <div class="step">
+                    <div class="step-number">1</div>
+                    <h3 class="step-title">Say or type what you want</h3>
+                    <p>“I want to make pizza” or “Add milk and eggs to my list.”</p>
+                </div>
+                
+                <div class="step">
+                    <div class="step-number">2</div>
+                    <h3 class="step-title">Chat Naturally</h3>
+                    <p>The chatbot will either generate a recipe ingredient list or modify your current one.</p>
+                </div>
+                
+                <div class="step">
+                    <div class="step-number">3</div>
+                    <h3 class="step-title">Review and go shopping!</h3>
+                    <p>Your updated grocery list is ready to go.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <section class="cta">
+        <div class="container">
+            <div class="glass-card" style="padding: 4rem; max-width: 900px; margin: 0 auto;">
+                <h2>Ready to Transform Your Grocery Routine?</h2>
+                <p>Join thousands of happy users who save time and money every week with GroceryBot.</p>
+                <a href="index.html" class="btn btn-primary" style="margin-top: 1.5rem;">
+                    <i class="fas fa-comment-alt"></i> Start Chatting for Free
+                </a>
+            </div>
+        </div>
+    </section>
+    
+    <footer id="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-col">
+                    <div class="footer-logo">
+                        <i class="fas fa-robot"></i>
+                        GroceryBot
+                    </div>
+                    <p class="footer-desc">Your intelligent shopping assistant that saves you time and money while helping you at your shopping.</p>
+                    
+                </div>
+                
+                <div class="footer-col">
+                    <h3 class="footer-title">Advantages</h3>
+                    <ul class="footer-links">
+                        <li class="footer-link-item"><a href="#" class="footer-link">User-Friendly</a></li>
+                        <li class="footer-link-item"><a href="#" class="footer-link">Customizable</a></li>
+                        <li class="footer-link-item"><a href="#" class="footer-link">Zero Waste Planning</a></li>
+                        <li class="footer-link-item"><a href="#" class="footer-link">Time-Saving</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-col">
+                    <h3 class="footer-title">About Us</h3>
+                    <ul class="footer-links">
+                        <li class="footer-link-item"><a href="#" class="footer-link">Jayant Singh Rathour</a></li>
+                        <li class="footer-link-item"><a href="#" class="footer-link">Harshit Choubey</a></li>
+                        <li class="footer-link-item"><a href="#" class="footer-link">Satyam Singh</a></li>
+                        <li class="footer-link-item"><a href="#" class="footer-link">Nithin Sai</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-col">
+                    <h3 class="footer-title">Support</h3>
+                    <ul class="footer-links">
+                        <li class="footer-link-item"><a href="#" class="footer-link">jayantsinghrathour7311@gmail.com</a></li>
+                        <li class="footer-link-item"><a href="#" class="footer-link">harshitch.1929@gmail.com</a></li>
+                        <li class="footer-link-item"><a href="#" class="footer-link">satyamkumarsingh1315@gmail.com</a></li>
+                        <li class="footer-link-item"><a href="#" class="footer-link">gorlienithinsai@gmail.com</a></li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="footer-bottom">
+                <p>&copy; 2025 GroceryBot. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>
